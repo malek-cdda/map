@@ -1,27 +1,175 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+ 
+ #map {
+    height: 400px;
+    width: 100%;
   }
+  
+  /* 
+   * Optional: Makes the sample page fill the window. 
+   */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #description {
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+  }
+   
+  #infowindow-content .title {
+    font-weight: bold;
+  }
+  
+  #infowindow-content {
+    display: none;
+  }
+  
+  #map #infowindow-content {
+    display: inline;
+  }
+  
+  .pac-card {
+    background-color: #fff;
+    border: 0;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+    margin: 10px;
+    padding: 0 0.5em;
+    font: 400 18px Roboto, Arial, sans-serif;
+    overflow: hidden;
+    font-family: Roboto;
+    padding: 0;
+    
+  }
+  
+  #pac-container {
+    padding-bottom: 12px;
+    margin-right: 12px;
+  }
+  
+  .pac-controls {
+    display: inline-block;
+    padding: 5px 11px;
+  }
+  
+  .pac-controls label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+  }
+  
+  #pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 400px;
+  }
+  
+  #pac-input:focus {
+    border-color: #4d90fe;
+  }
+  
+  #title {
+    color: #fff;
+    background-color: #4d90fe;
+    font-size: 25px;
+    font-weight: 500;
+    padding: 6px 12px;
+  }
+  
+
+  
+  .pac-container {
+    background-color: #ff0000;
+    position: absolute!important;
+    z-index: 1000;
+    border-radius: 2px;
+    border-top: 1px solid #ff0000;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.pac-logo:after {
+    content: "";
+    padding: 0px 0px 1px 0;
+    height: 16px;
+    text-align: right;
+    display: block;
+    background-image: url(https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white3.png);
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: 120px 14px
+}
+.hdpi.pac-logo:after {
+    background-image: url(https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white3_hdpi.png)
+}
+.pac-item {
+    cursor: default;
+    padding: 0 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 30px;
+    text-align: left;
+    border-top: 1px solid #e6e6e6;
+    font-size: 11px;
+    color: #ee0000
+}
+.pac-item:hover {
+    background-color: #fafafa
+}
+.pac-item-selected,
+.pac-item-selected:hover {
+    background-color: #ebf2fe
+}
+.pac-matched {
+    font-weight: 700
+}
+.pac-item-query {
+    font-size: 13px;
+    padding-right: 3px;
+    color: #000
+}
+.pac-icon {
+    width: 15px;
+    height: 20px;
+    margin-right: 7px;
+    margin-top: 6px;
+    display: inline-block;
+    vertical-align: top;
+    background-image: url(https://maps.gstatic.com/mapfiles/api-3/images/autocomplete-icons.png);
+    background-size: 34px
+}
+.hdpi .pac-icon {
+    background-image: url(https://maps.gstatic.com/mapfiles/api-3/images/autocomplete-icons_hdpi.png)
+}
+.pac-icon-search {
+    background-position: -1px -1px
+}
+.pac-item-selected .pac-icon-search {
+    background-position: -18px -1px
+}
+.pac-icon-marker {
+    background-position: -1px -161px
+}
+.pac-item-selected .pac-icon-marker {
+    background-position: -18px -161px
+}
+.pac-placeholder {
+    color: rgb(255, 0, 0)
 }
