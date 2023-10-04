@@ -1,5 +1,11 @@
 "use client";
-import { mapCenter } from "@/components/googleType";
+import {
+  mapCenter,
+  properties,
+  styleClicked,
+  styleDefault,
+  styleMouseMove,
+} from "@/components/googleType";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 import Script from "next/script";
@@ -8,217 +14,211 @@ declare global {
     initMap: () => void;
   }
 }
-const properties = [
-  {
-    address: "215 Emily St, MountainView, CA",
-    description: "Single family house with modern design",
-    price: "$ 3,889,000",
-    type: "home",
-    bed: 5,
-    bath: 4.5,
-    size: 300,
-    position: {
-      lat: 37.50024109655184,
-      lng: -122.28528451834352,
-    },
-  },
-  {
-    address: "108 Squirrel Ln &#128063;, Menlo Park, CA",
-    description: "Townhouse with friendly neighbors",
-    price: "$ 3,050,000",
-    type: "building",
-    bed: 4,
-    bath: 3,
-    size: 200,
-    position: {
-      lat: 37.44440882321596,
-      lng: -122.2160620727,
-    },
-  },
-  {
-    address: "100 Chris St, Portola Valley, CA",
-    description: "Spacious warehouse great for small business",
-    price: "$ 3,125,000",
-    type: "warehouse",
-    bed: 4,
-    bath: 4,
-    size: 800,
-    position: {
-      lat: 37.39561833718522,
-      lng: -122.21855116258479,
-    },
-  },
-  {
-    address: "98 Aleh Ave, Palo Alto, CA",
-    description: "A lovely store on busy road",
-    price: "$ 4,225,000",
-    type: "store-alt",
-    bed: 2,
-    bath: 1,
-    size: 210,
-    position: {
-      lat: 37.423928529779644,
-      lng: -122.1087629822001,
-    },
-  },
-  {
-    address: "2117 Su St, MountainView, CA",
-    description: "Single family house near golf club",
-    price: "$ 1,700,000",
-    type: "home",
-    bed: 4,
-    bath: 3,
-    size: 200,
-    position: {
-      lat: 37.40578635332598,
-      lng: -122.15043378466069,
-    },
-  },
-  {
-    address: "197 Alicia Dr, Santa Clara, CA",
-    description: "Multifloor large warehouse",
-    price: "$ 5,000,000",
-    type: "warehouse",
-    bed: 5,
-    bath: 4,
-    size: 700,
-    position: {
-      lat: 37.36399747905774,
-      lng: -122.10465384268522,
-    },
-  },
-  {
-    address: "700 Jose Ave, Sunnyvale, CA",
-    description: "3 storey townhouse with 2 car garage",
-    price: "$ 3,850,000",
-    type: "building",
-    bed: 4,
-    bath: 4,
-    size: 600,
-    position: {
-      lat: 37.38343706184458,
-      lng: -122.02340436985183,
-    },
-  },
-  {
-    address: "868 Will Ct, Cupertino, CA",
-    description: "Single family house in great school zone",
-    price: "$ 2,500,000",
-    type: "home",
-    bed: 3,
-    bath: 2,
-    size: 100,
-    position: {
-      lat: 37.34576403052,
-      lng: -122.04455090047453,
-    },
-  },
-  {
-    address: "655 Haylee St, Santa Clara, CA",
-    description: "2 storey store with large storage room",
-    price: "$ 2,500,000",
-    type: "store-alt",
-    bed: 3,
-    bath: 2,
-    size: 450,
-    position: {
-      lat: 37.362863347890716,
-      lng: -121.97802139023555,
-    },
-  },
-  {
-    address: "2019 Natasha Dr, San Jose, CA",
-    description: "Single family house",
-    price: "$ 2,325,000",
-    type: "home",
-    bed: 4,
-    bath: 3.5,
-    size: 500,
-    position: {
-      lat: 37.41391636421949,
-      lng: -121.94592071575907,
-    },
-  },
-];
+
 const page = () => {
+  // let maps: google.maps.Map;
+  let featureLayer: any;
+  let infoWindows: any;
+  let lastInteractedFeatureIds: any = [];
+  let lastClickedFeatureIds: any = [];
+
+  function handleClick(/* MouseEvent */ e: any) {
+    lastClickedFeatureIds = e.features.map((f: any) => f.placeId);
+    lastInteractedFeatureIds = [];
+    featureLayer.style = applyStyle;
+
+    createInfoWindow(e);
+  }
+
+  function handleMouseMove(/* MouseEvent */ e: any) {
+    lastInteractedFeatureIds = e.features.map((f: any) => f.placeId);
+    featureLayer.style = applyStyle;
+  }
   async function initMap() {
+    // input field event get
+    const input = document.getElementById("pac-input") as HTMLInputElement;
     // Request needed libraries.
-    const { Map } = (await google.maps.importLibrary(
+    const { InfoWindow } = (await google.maps.importLibrary(
       "maps"
     )) as google.maps.MapsLibrary;
-    const { AdvancedMarkerElement } = (await google.maps.importLibrary(
-      "marker"
-    )) as google.maps.MarkerLibrary;
-    const { LatLng } = (await google.maps.importLibrary(
-      "core"
-    )) as google.maps.CoreLibrary;
+    const { AdvancedMarkerElement, PinElement } =
+      (await google.maps.importLibrary("marker")) as google.maps.MarkerLibrary;
 
-    const center = new LatLng(37.43238031167444, -122.16795397128632);
-    const map = new Map(document.getElementById("map") as HTMLElement, {
-      zoom: 11,
-      center,
-      mapId: "4504f8b37365c3d0",
+    let map = new google.maps.Map(
+      document.getElementById("map") as HTMLElement,
+      {
+        zoom: 3,
+        center: { lat: -28.024, lng: 140.887 },
+
+        mapId: "a3efe1c035bad51b", // Substitute your own map ID.
+        mapTypeControl: false,
+      }
+    );
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: "",
+      disableAutoPan: true,
     });
 
-    for (const property of properties) {
-      const AdvancedMarkerElement =
-        new google.maps.marker.AdvancedMarkerElement({
-          map,
-          content: buildContent(property),
-          position: property.position,
-          title: property.description,
-        });
+    const options = {
+      fields: ["address_components", "geometry", "icon", "name"],
+      strictBounds: false,
+    };
+    const autocomplete = new google.maps.places.Autocomplete(input, options);
 
-      AdvancedMarkerElement.addListener("click", () => {
-        toggleHighlight(AdvancedMarkerElement, property);
+    // autocomplete place find here
+
+    // Create an array of alphabetical characters used to label the markers.
+
+    const markerss = new google.maps.Marker({
+      map,
+      anchorPoint: new google.maps.Point(0, -29),
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      infoWindow.close();
+      markerss.setVisible(false);
+      const place: any = autocomplete.getPlace();
+      console.log(place);
+
+      if (!place.geometry || !place.geometry.location) {
+        // User entered the name of a Place that was not suggested and
+        // pressed the Enter key, or the Place Details request failed.
+        window.alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+      // If the place has a geometry, then present it on a map.
+      // setName(place);
+      if (place.geometry.viewport) {
+        map.fitBounds(place.geometry.viewport);
+      } else {
+        map.setCenter(place.geometry.location);
+        map.setZoom(17);
+      }
+
+      markerss.setPosition(place.geometry.location);
+      markerss.setVisible(true);
+      // infowindowContent.children["place-name"].textContent = place.name;
+      // infowindowContent.children["place-address"].textContent =
+      //   place.formatted_address;
+      // infowindow.open(map);
+    });
+
+    // Add some markers to the map.
+    const markers = properties.map((position, i) => {
+      const pinGlyph = new google.maps.marker.PinElement({
+        glyph: "sdf",
+        glyphColor: "green",
+        borderColor: "yellow",
       });
-    }
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: position?.position,
+        content: pinGlyph.element,
+      });
+
+      // markers can only be keyboard focusable when they have click listeners
+      // open info window when marker is clicked
+      marker.addListener("click", () => {
+        infoWindow.setContent(
+          position.position.lat + ", " + position.position.lng
+        );
+        infoWindow.open(map, marker);
+      });
+      return marker;
+    });
+
+    // Request needed libraries.
+
+    featureLayer = map.getFeatureLayer("ADMINISTRATIVE_AREA_LEVEL_2");
+    new MarkerClusterer({ markers, map });
+    // Add the event listeners for the feature layer.
+    featureLayer.addListener("click", handleClick);
+    featureLayer.addListener("mousemove", handleMouseMove);
+
+    // Map event listener.
+    map.addListener("mousemove", () => {
+      // If the map gets a mousemove, that means there are no feature layers
+      // with listeners registered under the mouse, so we clear the last
+      // interacted feature ids.
+      if (lastInteractedFeatureIds?.length) {
+        lastInteractedFeatureIds = [];
+        featureLayer.style = applyStyle;
+      }
+    });
+
+    // Create the infowindow.
+    infoWindows = new InfoWindow({});
+    // Apply style on load, to enable clicking.
+    featureLayer.style = applyStyle;
   }
 
-  function toggleHighlight(markerView: any, property: any) {
-    if (markerView.content.classList.contains("highlight")) {
-      markerView.content.classList.remove("highlight");
-      markerView.zIndex = null;
-    } else {
-      markerView.content.classList.add("highlight");
-      markerView.zIndex = 1;
-    }
+  // Helper function for the infowindow.
+  async function createInfoWindow(event: any) {
+    let feature = event.features[0];
+    if (!feature.placeId) return;
+
+    // Update the infowindow.
+    const place = await feature.fetchPlace();
+    let content =
+      '<span style="font-size:small">Display name: ' +
+      place.displayName +
+      "<br/> Place ID: " +
+      feature.placeId +
+      "<br/> Feature type: " +
+      feature.featureType +
+      "</span>";
+
+    updateInfoWindow(content, event.latLng);
   }
 
-  function buildContent(property: any) {
-    const content = document.createElement("div");
-    content.classList.add("property");
-    content.innerHTML = `
-          <div class="icon">
-              <i aria-hidden="true" class="fa fa-icon fa-${property.type} text-3xl" title="${property.type}"></i>
-               <span class="fa-sr-only">${property.type}</span>
-          </div>
-          <div class="details">
-              <div class="price">${property.price}</div>
-              <div class="address">${property.address}</div>
-              <div class="features">
-              <div>
-                  <i aria-hidden="true" class="fa fa-bed fa-lg bed" title="bedroom"></i>
-                  <span class="fa-sr-only">bedroom</span>
-                  <span>${property.bed}</span>
-              </div>
-              <div>
-                  <i aria-hidden="true" class="fa fa-bath fa-lg bath" title="bathroom"></i>
-                  <span class="fa-sr-only">bathroom</span>
-                  <span>${property.bath}</span>
-              </div>
-              <div>
-                  <i aria-hidden="true" class="fa fa-ruler fa-lg size" title="size"></i>
-                  <span class="fa-sr-only">size</span>
-                  <span>${property.size} ft<sup>2</sup></span>
-              </div>
-              </div>
-          </div>
-          `;
-    return content;
+  // Apply styles using a feature style function.
+  function applyStyle(/* FeatureStyleFunctionOptions */ params: any) {
+    const placeId = params.feature.placeId;
+
+    //@ts-ignore
+    console.log(placeId);
+    if (lastClickedFeatureIds.includes(placeId)) {
+      return styleClicked;
+    }
+    //@ts-ignore
+    if (lastInteractedFeatureIds.includes(placeId)) {
+      return styleMouseMove;
+    }
+    // styleBoundary(placeId);
+    // return styleDefault;
+  }
+  function styleBoundary(selectedPlaceId: any) {
+    // Define a style of transparent purple with opaque stroke.
+    const styleFill = /** @type {!google.maps.FeatureStyleOptions} */ {
+      strokeColor: "red",
+      strokeOpacity: 1.0,
+      strokeWeight: 3.0,
+      fillColor: "#810FCB",
+      fillOpacity: 0.5,
+    };
+    featureLayer.style = (params) => {
+      return styleDefault; // Set to the default style for all boundaries
+    };
+
+    // Define the feature style function.
+    featureLayer.style = (params) => {
+      if (params.feature.placeId === selectedPlaceId) {
+        return styleClicked; // Apply the custom style for the selected boundary
+      }
+    };
+  }
+
+  // Helper function to create an info window.
+  function updateInfoWindow(content: any, center: any) {
+    infoWindows.setContent(content);
+    infoWindows.setPosition(center);
+    infoWindows.open({
+      shouldFocus: false,
+    });
   }
 
   window.initMap = initMap;
+
   return (
     <div>
       <Script
@@ -227,6 +227,21 @@ const page = () => {
       ></Script>
       <Script src="https://polyfill.io/v3/polyfill.min.js?features=default"></Script>
       <Script src="https://kit.fontawesome.com/de6730f8c3.js"></Script>
+      <div className="  ">
+        <div className="pac-card" id="pac-card">
+          <div id="title">Adress Search</div>
+          <div id="type-selector" className="pac-controls"></div>
+
+          <div id="pac-container relative" className="border relative">
+            <input
+              id="pac-input"
+              type="text"
+              placeholder="Enter a location"
+              className="px-5 py-5 "
+            />
+          </div>
+        </div>
+      </div>
       <div id="map"></div>
     </div>
   );

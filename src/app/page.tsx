@@ -6,6 +6,7 @@ import {
   properties,
   typeValue,
 } from "@/components/googleType";
+import { MarkerClusterer } from "@react-google-maps/api";
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 declare global {
@@ -38,7 +39,7 @@ function Home() {
 
     const map = new Map(document.getElementById("map") as HTMLElement, {
       zoom: 11,
-      center: { lat: 37.43238031167444, lng: -122.16795397128632 },
+      center: { lat: -28.024, lng: 140.887 },
       mapId: "4504f8b37365c3d0",
     });
 
@@ -55,6 +56,13 @@ function Home() {
         toggleHighlight(AdvancedMarkerElement, property);
       });
     }
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: "",
+      disableAutoPan: true,
+    });
+
+    // custom clastering
 
     const card = document.getElementById("pac-card") as HTMLElement;
     // console.log(input);
@@ -149,7 +157,7 @@ function Home() {
               <i aria-hidden="true" class="fa fa-icon fa-${property.type} text-3xl" title="${property.type}"></i>
                <span class="fa-sr-only">${property.type}</span>
           </div>
-          <div class="details">
+          <div class="details  ">
               <div class="price">${property.price}</div>
               <div class="address">${property.address}</div>
               <div class="features">
@@ -201,7 +209,7 @@ function Home() {
       console.log(value);
     });
     setAddress(value);
-  }, [name]);
+  }, [address, name?.address_components]);
 
   return (
     <div id="ma " className="relative">
