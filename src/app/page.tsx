@@ -6,8 +6,7 @@ import {
   properties,
   typeValue,
 } from "@/components/googleType";
-import { MarkerClusterer } from "@react-google-maps/api";
-import Script from "next/script";
+
 import { useEffect, useRef, useState } from "react";
 declare global {
   interface Window {
@@ -26,6 +25,7 @@ function Home() {
 
   async function initMap() {
     const input = document.getElementById("pac-input") as HTMLInputElement;
+    console.log(input);
     const { Map } = (await google.maps.importLibrary(
       "maps"
     )) as google.maps.MapsLibrary;
@@ -209,16 +209,10 @@ function Home() {
       console.log(value);
     });
     setAddress(value);
-  }, [address, name?.address_components]);
+  }, [name?.address_components]);
 
   return (
     <div id="ma " className="relative">
-      <Script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-CWmVyAapUI5zhqL8zIj8Oa6a95UexVs&callback=initMap&libraries=places&v=weekly"
-        defer
-      ></Script>
-      <Script src="https://polyfill.io/v3/polyfill.min.js?features=default"></Script>
-
       <div className="pac-card" id="pac-card">
         <div id="title">Adress Search</div>
         <div id="type-selector" className="pac-controls"></div>

@@ -16,7 +16,6 @@ declare global {
 }
 
 const page = () => {
-  // let maps: google.maps.Map;
   let featureLayer: any;
   let infoWindows: any;
   let lastInteractedFeatureIds: any = [];
@@ -37,6 +36,7 @@ const page = () => {
   async function initMap() {
     // input field event get
     const input = document.getElementById("pac-input") as HTMLInputElement;
+    console.log(input);
     // Request needed libraries.
     const { InfoWindow } = (await google.maps.importLibrary(
       "maps"
@@ -65,11 +65,7 @@ const page = () => {
       strictBounds: false,
     };
     const autocomplete = new google.maps.places.Autocomplete(input, options);
-
-    // autocomplete place find here
-
-    // Create an array of alphabetical characters used to label the markers.
-
+    console.log(autocomplete);
     const markerss = new google.maps.Marker({
       map,
       anchorPoint: new google.maps.Point(0, -29),
@@ -79,16 +75,12 @@ const page = () => {
       infoWindow.close();
       markerss.setVisible(false);
       const place: any = autocomplete.getPlace();
-      console.log(place);
 
       if (!place.geometry || !place.geometry.location) {
-        // User entered the name of a Place that was not suggested and
-        // pressed the Enter key, or the Place Details request failed.
         window.alert("No details available for input: '" + place.name + "'");
         return;
       }
-      // If the place has a geometry, then present it on a map.
-      // setName(place);
+
       if (place.geometry.viewport) {
         map.fitBounds(place.geometry.viewport);
       } else {
@@ -176,7 +168,7 @@ const page = () => {
     const placeId = params.feature.placeId;
 
     //@ts-ignore
-    console.log(placeId);
+
     if (lastClickedFeatureIds.includes(placeId)) {
       return styleClicked;
     }
@@ -221,12 +213,6 @@ const page = () => {
 
   return (
     <div>
-      <Script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-CWmVyAapUI5zhqL8zIj8Oa6a95UexVs&callback=initMap&libraries=places&v=weekly"
-        defer
-      ></Script>
-      <Script src="https://polyfill.io/v3/polyfill.min.js?features=default"></Script>
-      <Script src="https://kit.fontawesome.com/de6730f8c3.js"></Script>
       <div className="  ">
         <div className="pac-card" id="pac-card">
           <div id="title">Adress Search</div>
