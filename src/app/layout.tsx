@@ -28,6 +28,7 @@ export default function RootLayout({
         <div className="py-5 px-3 [&>*]:p-3 [&>*]:hover:border [&>*]:mx-3 text-2xl">
           <Link href="/map/simpleMap">simple map</Link>
           <Link href="/map/hoverMap"> hover map</Link>
+          <Link href="/googleMap"> cluster map</Link>
         </div>
         {children}
       </body>
