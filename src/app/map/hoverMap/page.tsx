@@ -6,17 +6,21 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { FaBeer } from "react-icons/fa";
 let panorama: google.maps.StreetViewPanorama;
 let map: google.maps.Map;
+let infoWindow: google.maps.InfoWindow;
+let maxZoomService: google.maps.MaxZoomService;
 
 declare global {
   interface Window {
     initMap: () => void;
   }
 }
+
 const Home = () => {
   // const [singlePropertyData, setSinglePropertyData] = useState<any>({});
+  const [isStreet, setIsStreet] = useState(true);
   const [latlng, setLatLng] = useState({
     name: "abdul karim",
-    position: { lat: -35.304724, lng: 148.662905 },
+    position: { lat: -36.828611, lng: 175.790222 },
     price: "sd",
     address: "come to mirpur",
   });
@@ -33,7 +37,7 @@ const Home = () => {
     );
 
     // display show given location  == infowindow
-    let infoWindow = new google.maps.InfoWindow({
+    infoWindow = new google.maps.InfoWindow({
       content: buildContent(latlng),
       position: latlng.position,
     });
@@ -48,23 +52,25 @@ const Home = () => {
       title: "This marker is draggable.",
     });
     draggableMarker.addListener("dragend", (event: any) => {
-      console.log(event);
-      const position = draggableMarker.position as google.maps.LatLng;
-      console.log(position.lng);
+      const positions = draggableMarker.position as google.maps.LatLng;
+
+      const lats: any = positions.lat;
+      const lngs: any = positions.lng;
+
+      streetView(map, { lat: lats, lng: lngs });
       infoWindow.close();
       // infoWindow.setContent(`Pin dropped at: ${position.lat}, ${position.lng}`);
       infoWindow.open(draggableMarker.map, draggableMarker);
     });
     infoWindow.open(map);
     const markers = buildCluster(infoWindow, map);
-
     new MarkerClusterer({ markers, map });
     // street view function call from here
-
     try {
-      streetView(map);
+      streetView(map, latlng.position);
     } catch (error: any) {
-      console.log(error.message);
+      // console.log(error.message);
+      // findNoStreetView()
     }
   }
   //   cluster method
@@ -91,7 +97,6 @@ const Home = () => {
   }
   // custom hover component for exact location
   function buildContent(property: any) {
-    console.log(property);
     const content = document.createElement("div");
     content.innerHTML = `
           <div class="icon">
@@ -126,26 +131,36 @@ const Home = () => {
     return content;
   }
   // find street or place view
-  function streetView(map: any) {
+  function streetView(map: any, pos?: any) {
     const sv = new google.maps.StreetViewService();
     panorama = new google.maps.StreetViewPanorama(
       document.getElementById("pano") as HTMLElement
     );
 
-    sv.getPanorama({ location: latlng.position, radius: 50 })
+    sv.getPanorama({ location: pos, radius: 50 })
       .then(processSVData)
-      .catch((e) => console.log("not foun street"));
+      .catch((e) =>
+        //  findNoStreetView(map)
+        {
+          // setIsStreet(false);
+        }
+      );
     map.addListener("click", (event: any) => {
-      console.log(event);
+      // console.log(event);
       sv.getPanorama({ location: event.latLng, radius: 50 })
         .then(processSVData)
         .catch((e) =>
-          console.error("Street View data not found for this location.")
+          //  findNoStreetView(map)
+          {
+            //
+          }
         );
     });
   }
   function processSVData({ data }: google.maps.StreetViewResponse) {
     const location = data.location!;
+    // console.log(location, "why why");
+
     const marker = new google.maps.Marker({
       position: location.latLng,
       map,
@@ -168,6 +183,9 @@ const Home = () => {
       panorama.setVisible(true);
     });
   }
+
+  // when not find any route show street view
+
   const router = useRouter();
   useEffect(() => {
     //
@@ -178,7 +196,7 @@ const Home = () => {
       initMap();
     }
   }, [router, latlng]);
-
+  console.log(isStreet);
   return (
     <div className="grid  grid-cols-2">
       <section className="flex flex-wrap justify-between gap-3 px-5 h-full">
@@ -204,7 +222,7 @@ const Home = () => {
       h-100"
         ></div>
       </section>
-      <div id="pano" className="h-[1100px] w-1/2"></div>
+      {isStreet && <div id="pano" className="h-[1100px] w-1/2"></div>}
     </div>
   );
 };
