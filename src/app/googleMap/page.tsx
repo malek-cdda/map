@@ -1,4 +1,6 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {
   mapCenter,
   properties,
@@ -8,14 +10,13 @@ import {
 } from "@/components/googleType";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
-import Script from "next/script";
 declare global {
   interface Window {
     initMap: () => void;
   }
 }
 
-const page = () => {
+const Home = () => {
   let featureLayer: any;
   let infoWindows: any;
   let lastInteractedFeatureIds: any = [];
@@ -36,24 +37,22 @@ const page = () => {
   async function initMap() {
     // input field event get
     const input = document.getElementById("pac-input") as HTMLInputElement;
-    console.log(input);
+
     // Request needed libraries.
     const { InfoWindow } = (await google.maps.importLibrary(
       "maps"
     )) as google.maps.MapsLibrary;
     const { AdvancedMarkerElement, PinElement } =
       (await google.maps.importLibrary("marker")) as google.maps.MarkerLibrary;
+    const { Map } = (await google.maps.importLibrary(
+      "maps"
+    )) as google.maps.MapsLibrary;
 
-    let map = new google.maps.Map(
-      document.getElementById("map") as HTMLElement,
-      {
-        zoom: 3,
-        center: { lat: -28.024, lng: 140.887 },
-
-        mapId: "a3efe1c035bad51b", // Substitute your own map ID.
-        mapTypeControl: false,
-      }
-    );
+    let map = new Map(document.getElementById("map") as HTMLElement, {
+      center: { lat: 20.773, lng: -156.01 },
+      zoom: 12,
+      mapId: "a3efe1c035bad51b",
+    });
 
     const infoWindow = new google.maps.InfoWindow({
       content: "",
@@ -71,6 +70,22 @@ const page = () => {
       anchorPoint: new google.maps.Point(0, -29),
     });
 
+    // boundaries for place
+    let featureLayer = map.getFeatureLayer("LOCALITY");
+    // design field and  border
+    const featureStyleOptions: google.maps.FeatureStyleOptions = {
+      strokeColor: "#810FCB",
+      strokeOpacity: 1.0,
+      strokeWeight: 3.0,
+      // fillColor: "#810FCB",
+      fillOpacity: 0.5,
+    };
+    featureLayer.style = (options: { feature: { placeId: string } }): any => {
+      if (options.feature.placeId == "ChIJ0zQtYiWsVHkRk8lRoB1RNPo") {
+        // Hana, HI
+        return featureStyleOptions;
+      }
+    };
     autocomplete.addListener("place_changed", () => {
       infoWindow.close();
       markerss.setVisible(false);
@@ -124,6 +139,7 @@ const page = () => {
     featureLayer = map.getFeatureLayer("ADMINISTRATIVE_AREA_LEVEL_2");
     new MarkerClusterer({ markers, map });
     // Add the event listeners for the feature layer.
+    console.log("what is this");
     featureLayer.addListener("click", handleClick);
     featureLayer.addListener("mousemove", handleMouseMove);
 
@@ -147,6 +163,7 @@ const page = () => {
   // Helper function for the infowindow.
   async function createInfoWindow(event: any) {
     let feature = event.features[0];
+    console.log(feature);
     if (!feature.placeId) return;
 
     // Update the infowindow.
@@ -209,7 +226,14 @@ const page = () => {
     });
   }
 
-  window.initMap = initMap;
+  const router = useRouter();
+  useEffect(() => {
+    window.initMap = initMap;
+    if (typeof google !== "undefined") {
+      window.initMap = initMap;
+      initMap();
+    }
+  }, [router]);
 
   return (
     <div>
@@ -233,7 +257,7 @@ const page = () => {
   );
 };
 
-export default page;
+export default Home;
 
 // const [icons, setIcons] = useState<typeof import("react-icons/fa") | null>(
 //     null
