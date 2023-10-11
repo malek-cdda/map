@@ -64,7 +64,9 @@ const Home = () => {
     });
     infoWindow.open(map);
     const markers = buildCluster(infoWindow, map);
-    new MarkerClusterer({ markers, map });
+
+    const view = new MarkerClusterer({ markers, map });
+
     // street view function call from here
     try {
       streetView(map, latlng.position);
