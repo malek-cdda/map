@@ -1,5 +1,5 @@
 "use client";
-import { variableDelareMethod } from "@/components/mergeData";
+import { placeFind, variableDelareMethod } from "@/components/mergeData";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 //  declare global windows interface to see the display in live
@@ -15,8 +15,11 @@ const Home = () => {
   // this is inital function to show map and its element
   const initMap = () => {
     // decalre variable i set in component and return them to working here
-    let { map, input } = variableDelareMethod();
-    console.log(input, map);
+    let { autocomplete, map, infowindow, marker } = variableDelareMethod();
+
+    autocomplete.addListener("place_changed", () => {
+      placeFind(map, autocomplete, infowindow, marker);
+    });
   };
   // for rendering purpose we need to give route dependencies
   useEffect(() => {
@@ -33,6 +36,11 @@ const Home = () => {
         />
       </div>
       <div id="map"></div>
+      <div id="infowindow-content">
+        <span id="place-name" className="title"></span>
+        <br />
+        <span id="place-address"></span>
+      </div>
     </div>
   );
 };
