@@ -84,8 +84,9 @@ const Home = () => {
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position: item?.position,
         content: pinGlyph.element,
+        gmpDraggable: true,
+        title: "d",
       });
-
       // open info window when marker is clicked
       marker.addListener("click", () => {
         infoWindow.setContent(item?.position.lat + ", " + item.position.lng);

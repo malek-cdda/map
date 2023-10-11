@@ -19,6 +19,7 @@ export type typeValue = {
 export interface address {
   name: string;
   icon: string;
+  state?: string;
   address_components: {
     long_name: string | number;
     short_name: string | number;
@@ -50,6 +51,7 @@ export const properties = [
     bath: 4.5,
     size: 300,
     position: { lat: -31.56391, lng: 147.154312 },
+    state: "Florida",
   },
   {
     address: "108 Squirrel Ln &#128063;, Menlo Park, CA",
@@ -60,6 +62,7 @@ export const properties = [
     bath: 3,
     size: 200,
     position: { lat: -33.718234, lng: 150.363181 },
+    state: "North Province",
   },
   {
     address: "100 Chris St, Portola Valley, CA",
@@ -70,6 +73,7 @@ export const properties = [
     bath: 4,
     size: 800,
     position: { lat: -33.727111, lng: 150.371124 },
+    state: "Shan",
   },
   {
     address: "98 Aleh Ave, Palo Alto, CA",
@@ -80,6 +84,7 @@ export const properties = [
     bath: 1,
     size: 210,
     position: { lat: -33.848588, lng: 151.209834 },
+    state: "Shan",
   },
   {
     address: "2117 Su St, MountainView, CA",
@@ -90,6 +95,7 @@ export const properties = [
     bath: 3,
     size: 200,
     position: { lat: -33.851702, lng: 151.216968 },
+    state: "South Province",
   },
   {
     address: "197 Alicia Dr, Santa Clara, CA",
@@ -100,6 +106,7 @@ export const properties = [
     bath: 4,
     size: 700,
     position: { lat: -34.671264, lng: 150.863657 },
+    state: "Florida",
   },
   {
     address: "700 Jose Ave, Sunnyvale, CA",
@@ -110,6 +117,7 @@ export const properties = [
     bath: 4,
     size: 600,
     position: { lat: -35.304724, lng: 148.662905 },
+    state: "Shan",
   },
   {
     address: "868 Will Ct, Cupertino, CA",
@@ -120,6 +128,7 @@ export const properties = [
     bath: 2,
     size: 100,
     position: { lat: -36.817685, lng: 175.699196 },
+    state: "Shan",
   },
   {
     address: "655 Haylee St, Santa Clara, CA",
@@ -130,6 +139,7 @@ export const properties = [
     bath: 2,
     size: 450,
     position: { lat: -36.828611, lng: 175.790222 },
+    state: "Shan",
   },
   {
     address: "2019 Natasha Dr, San Jose, CA",
@@ -140,6 +150,7 @@ export const properties = [
     bath: 3.5,
     size: 500,
     position: { lat: -37.75, lng: 145.116667 },
+    state: "Shan",
   },
 ];
 
