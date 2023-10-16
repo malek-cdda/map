@@ -31,18 +31,39 @@ export const markerData = [
   },
 ];
 
-export function buildContent(property: any) {
-  const content = document.createElement("div");
-  content.innerHTML = `
-            <div class="icon">
-             <span aria-hidden="true" class=" " title="${property?.price}">${property.price}</span>
-                 <span class="fa-sr-only">${property?.position?.lat}</span>
-            </div>
-            <input  class="border bg-red-800 " />
-            <div class="details  ">
-                <div class="price">${property?.position?.lng}</div>
-                <div class="address">${property?.title}</div>
-            </div>
-            `;
-  return content;
+export function ZoomControl(controlDiv: any, map: any) {
+  // Creating divs & styles for custom zoom control
+  controlDiv.style.padding = "5px";
+
+  // Set CSS for the control wrapper
+  var controlWrapper = document.createElement("div");
+  controlWrapper.className =
+    "cursor-pointer border-1 text-center h-20 fixed bottom-1/2 right-10";
+  controlDiv.appendChild(controlWrapper);
+  // Set CSS for the zoomIn
+  var zoomInButton = document.createElement("div");
+  zoomInButton.style.width = "32px";
+  zoomInButton.style.height = "32px";
+  /* Change this to be the .png image you want to use */
+  zoomInButton.style.background = "green";
+  controlWrapper.appendChild(zoomInButton);
+
+  // Set CSS for the zoomOut
+  var zoomOutButton = document.createElement("div");
+  zoomOutButton.style.background = "red";
+  zoomOutButton.style.width = "32px";
+  zoomOutButton.style.height = "32px";
+  /* Change this to be the .png image you want to use */
+
+  controlWrapper.appendChild(zoomOutButton);
+
+  // Setup the click event listener - zoomIn
+  google.maps.event.addDomListener(zoomInButton, "click", function () {
+    map.setZoom(map.getZoom() + 1);
+  });
+
+  // Setup the click event listener - zoomOut
+  google.maps.event.addDomListener(zoomOutButton, "click", function () {
+    map.setZoom(map.getZoom() - 1);
+  });
 }

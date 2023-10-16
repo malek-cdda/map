@@ -1,9 +1,11 @@
 "use client";
 import Custome from "@/components/customeCard/Custome";
-import { markerData } from "@/components/marker/data";
+import { ZoomControl, markerData } from "@/components/marker/data";
 import Index from "@/components/selectProduct";
 import ReactDOM from "react-dom/client";
 import React, { useEffect, useState } from "react";
+import ReactDOMServer from "react-dom/server";
+
 // declare map types
 let map: google.maps.Map;
 let infoWindow: google.maps.InfoWindow;
@@ -24,13 +26,22 @@ const Home = () => {
       center: { lat: 34.8559195, lng: -111.7988186 },
       zoom: 14,
       mapId: "googlemapid",
+      zoomControl: false,
     });
+    // custom zoom button
+    var zoomInButton: any = document.createElement("div");
+    var zoomControlDiv: any = document.createElement("div");
+    var zoomControl: any = ZoomControl(zoomControlDiv, map);
+    zoomControlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(zoomControlDiv);
     // declare inforwindow
+    const content = ReactDOMServer.renderToStaticMarkup(
+      <Items1 product={product} />
+    );
     let infoWindow = new google.maps.InfoWindow({
-      content: buildContent(product),
+      content: content,
       position: product?.position,
     });
-
     // marker declare
     markerCustom(AdvancedMarkerElement, map, toggle, PinElement, infoWindow);
     // set item center selected product
@@ -38,7 +49,6 @@ const Home = () => {
     // show product in the map
     infoWindow.open(map);
   }
-
   //   custome value show in marker
   async function markerCustom(
     params: any,
@@ -47,7 +57,8 @@ const Home = () => {
     PinElement: any,
     infoWindow: any
   ) {
-    markerData.forEach(({ position, price, title, img }) => {
+    markerData.forEach((items) => {
+      const { position, price, title, img } = items;
       // customer marker design for every user
       const beachFlagImg = document.createElement("img");
       beachFlagImg.src = `${img}`;
@@ -70,40 +81,19 @@ const Home = () => {
         content: toggle ? pinScaled?.element : priceTag,
       });
       marker.addListener("click", ({ domEvent }: any) => {
-        const { target } = domEvent;
         // infoWindow.close();
-        infoWindow.setContent(buildContent(product));
+        infoWindow.setContent(<Items1 product={items} />);
         infoWindow.open(marker.map, marker);
       });
     });
   }
-  function buildContent(property: any) {
-    const container = document.createElement("div");
 
-    // ReactDOM.render(<Custome />, container);
-    const content = document.createElement("div");
-
-    content.innerHTML = `
-            <div class="icon  ">
-         
-             <span aria-hidden="true" class=" "  >${property.price}</span>
-                 <span class="fa-sr-only">${property?.position?.lat}</span>
-            </div>
-            <input  class="border bg-red-800 " />
-            <div class="details  ">
-                <div class="price">${property?.position?.lng}</div>
-                <div class="address">${property?.title}</div>
-            </div>
-            `;
-    return content;
-  }
   useEffect(() => {
     window.initMap = initMap;
     if (typeof google !== "undefined") {
       initMap();
     }
   }, [toggle, product]);
-
   return (
     <div>
       <div id="map" className="h-[500px]"></div>
@@ -128,8 +118,8 @@ const Home = () => {
 
 export default Home;
 
-export const Items1 = () => {
-  return <>welcome back home</>;
+export const Items1 = ({ product }: any) => {
+  return <>welcome back hom e {product?.title}</>;
 };
 
 // git branch -m main development
