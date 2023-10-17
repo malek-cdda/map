@@ -8,7 +8,7 @@ const Home = () => {
   const [arr, setArr] = useState<any>([]);
   async function initMap() {
     var pyrmonts = new google.maps.LatLng(-33.8665433, 151.1956316);
-    map = new google.maps.Map(document.getElementById("map"), {
+    map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
       center: pyrmonts,
       zoom: 15,
     });
@@ -40,7 +40,7 @@ const Home = () => {
       // infoWindow.setContent(JSON.stringify(e.latLng.toJSON(), null, 2));
       // infoWindow.open(map);
     });
-    map.addListener("zoom_changed", (e: any) => {
+    map.addListener("zoom", (e: any) => {
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode(
         { location: { lat: map.center.lat(), lng: map.center.lng() } },

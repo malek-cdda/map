@@ -1,6 +1,6 @@
 import React from "react";
 
-const Custome = () => {
+const Custome = ({ product }) => {
   return <div>thi si sser</div>;
 };
 

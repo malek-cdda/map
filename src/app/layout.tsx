@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-CWmVyAapUI5zhqL8zIj8Oa6a95UexVs&callback=initMap&libraries=places&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-CWmVyAapUI5zhqL8zIj8Oa6a95UexVs&callback=initMap&libraries=places&libraries=geometry&v=weekly"
         defer
       ></Script>
       <Script src="https://polyfill.io/v3/polyfill.min.js?features=default"></Script>
