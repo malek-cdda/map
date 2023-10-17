@@ -9,7 +9,7 @@ export const markerData = [
     state: "Arizona",
   },
   {
-    position: { lat: 34.8559195, lng: -111.7988186 },
+    position: { lat: -33.8665433, lng: 151.1956316 },
     title: "Airport Mesa",
     price: "223k",
     img: "/next.svg",
@@ -119,9 +119,11 @@ export async function findProperty(
   value: any,
   setState: any,
   map: any,
-  infoWindow: any
+  infoWindow: any,
+  setNearBy: any
 ) {
   map.addListener(value, (e: any) => {
+    // nearBySearch(map, setNearBy);
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode(
       { location: { lat: map?.center?.lat(), lng: map?.center?.lng() } },
@@ -130,6 +132,7 @@ export async function findProperty(
         for (const component of addressComponents) {
           if (component.types.includes("administrative_area_level_1")) {
             const state = component.long_name;
+            nearBySearch(map, setNearBy);
             setState(state);
             // console.log("State:", state);
             // infoWindow?.open();
@@ -166,28 +169,40 @@ export const placeFind = (
   // infowindow.open(map);
   marker.setPosition(place?.geometry?.location);
   // return place?.geometry?.location;
+
   return {
     lat: place?.geometry?.location.lat(),
     lng: place?.geometry?.location.lng(),
   };
-  // marker.setVisible(true);
-  // return;
-  // const geocoder = new google.maps.Geocoder();
-  // geocoder.geocode(
-  //   { location: { lat: map?.center?.lat(), lng: map?.center?.lng() } },
-  //   (results: any, status) => {
-  //     // console.log(results[0]);
-  //     // setProperty(results);
-  //     const addressComponents = results[0].address_components;
-  //     console.log(addressComponents);
-  //     for (const component of addressComponents) {
-  //       if (component.types.includes("administrative_area_level_1")) {
-  //         const state = component.long_name;
-  //         setState(state);
-  //         console.log("State:", state);
-  //       }
-  //     }
-  //   }
-  // );
-  // map.setCenter({ lat: map?.center?.lat(), lng: map?.center?.lng() });
 };
+
+// neerby search function
+export async function nearBySearch(map: any, setNearBy: any) {
+  let lat: number = map?.center?.lat();
+  let lng: number = map?.center?.lng();
+  console.log(lat, lng, "lat lng");
+  var pyrmont = new google.maps.LatLng(lat, lng);
+  var request: any = {
+    location: pyrmont,
+    radius: "500",
+    type: ["hospital", "school", "restaurant"],
+    // keyword: ["hotel"],
+  };
+  map.setCenter(pyrmont);
+  // console.log(map.getCenter);
+  let service = new google.maps.places.PlacesService(map);
+  service.nearbySearch(request, callback);
+
+  function callback(results: any, status: any) {
+    // setArr((prev: any) => [...prev, results]);
+
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      console.log(results);
+      setNearBy(results);
+      // for (var i = 0; i < results.length; i++) {
+      //   // createMarker(results[i]);
+      //   // setNearBy(results)
+      // }
+    }
+  }
+}

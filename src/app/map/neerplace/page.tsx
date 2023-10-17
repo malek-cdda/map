@@ -13,74 +13,73 @@ const Home = () => {
       zoom: 15,
     });
 
-    map.addListener("drag", (e: any) => {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode(
-        { location: { lat: map.center.lat(), lng: map.center.lng() } },
-        (results: any, status) => {
-          console.log(results[0]);
-          // setProperty(results);
-          const addressComponents = results[0].address_components;
-          for (const component of addressComponents) {
-            if (component.types.includes("administrative_area_level_1")) {
-              const state = component.long_name;
-              // setState(state);
-              console.log("State:", state);
-            }
-          }
-        }
-      );
+    // map.addListener("drag", (e: any) => {
+    //   const geocoder = new google.maps.Geocoder();
+    //   geocoder.geocode(
+    //     { location: { lat: map.center.lat(), lng: map.center.lng() } },
+    //     (results: any, status) => {
+    //       console.log(results[0]);
+    //       // setProperty(results);
+    //       const addressComponents = results[0].address_components;
+    //       for (const component of addressComponents) {
+    //         if (component.types.includes("administrative_area_level_1")) {
+    //           const state = component.long_name;
+    //           // setState(state);
+    //           console.log("State:", state);
+    //         }
+    //       }
+    //     }
+    //   );
 
-      // Close the current InfoWindow.
-      // infoWindow.close();
-      // // Create a new InfoWindow.
-      // infoWindow = new google.maps.InfoWindow({
-      //   position: e.latLng,
-      // });
-      // infoWindow.setContent(JSON.stringify(e.latLng.toJSON(), null, 2));
-      // infoWindow.open(map);
-    });
-    map.addListener("zoom", (e: any) => {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode(
-        { location: { lat: map.center.lat(), lng: map.center.lng() } },
-        (results: any, status) => {
-          console.log(results[0]);
-          // setProperty(results);
-          const addressComponents = results[0].address_components;
-          for (const component of addressComponents) {
-            if (component.types.includes("administrative_area_level_1")) {
-              const state = component.long_name;
-              // setState(state);
-              console.log("State:", state);
-            }
-          }
-        }
-      );
-    });
-    map.addListener("click", (e: any) => {
-      console.log(e.latLng.lat(), e.latLng.lng());
-    });
-    for (var i = 1; i < 2; i++) {
-      let lat: number = -33.8665433;
-      let lng: number = 151.1956316;
-      var pyrmont = new google.maps.LatLng(lat, lng);
-      var request: any = {
-        location: pyrmont,
-        radius: "500",
-        type: ["restaurant"],
-        // keyword: ["hotel"],
-      };
-      // map.setCenter(pyrmont);
-      service = new google.maps.places.PlacesService(map);
-      service.nearbySearch(request, callback);
-    }
+    // Close the current InfoWindow.
+    // infoWindow.close();
+    // // Create a new InfoWindow.
+    // infoWindow = new google.maps.InfoWindow({
+    //   position: e.latLng,
+    // });
+    // infoWindow.setContent(JSON.stringify(e.latLng.toJSON(), null, 2));
+    // infoWindow.open(map);
+    // });
+    // map.addListener("zoom", (e: any) => {
+    //   const geocoder = new google.maps.Geocoder();
+    //   geocoder.geocode(
+    //     { location: { lat: map.center.lat(), lng: map.center.lng() } },
+    //     (results: any, status) => {
+    //       console.log(results[0]);
+    //       // setProperty(results);
+    //       const addressComponents = results[0].address_components;
+    //       for (const component of addressComponents) {
+    //         if (component.types.includes("administrative_area_level_1")) {
+    //           const state = component.long_name;
+    //           // setState(state);
+    //           console.log("State:", state);
+    //         }
+    //       }
+    //     }
+    //   );
+    // });
+    // map.addListener("click", (e: any) => {
+    //   console.log(e.latLng.lat(), e.latLng.lng());
+    // });
+
+    let lat: number = -33.8665433;
+    let lng: number = 151.1956316;
+    var pyrmont = new google.maps.LatLng(lat, lng);
+    var request: any = {
+      location: pyrmont,
+      radius: "500",
+      type: ["restaurant"],
+      // keyword: ["hotel"],
+    };
+    // map.setCenter(pyrmont);
+    service = new google.maps.places.PlacesService(map);
+    service.nearbySearch(request, callback);
 
     function callback(results: any, status: any) {
       setArr((prev: any) => [...prev, results]);
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
-          createMarker(results[i]);
+          // createMarker(results[i]);
         }
       }
     }

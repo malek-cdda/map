@@ -1,17 +1,18 @@
 "use client";
-import Custome from "@/components/customeCard/Custome";
 import {
   findProperty,
   markerCustom,
   markerData,
+  nearBySearch,
   placeFind,
 } from "@/components/marker/data";
 import Index from "@/components/selectProduct";
-import ReactDOM from "react-dom/client";
 import React, { useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
-import { Content } from "next/font/google";
 
+var service;
+var infowindow;
+let panorama: google.maps.StreetViewPanorama;
 // declare map types
 let map: google.maps.Map;
 let infoWindow: google.maps.InfoWindow;
@@ -19,6 +20,7 @@ const Home = () => {
   let myData: any = markerData;
   const [toggle, setToggle] = useState(true);
   const [state, setState] = useState<any>(null);
+  const [neerby, setNearBy] = useState<any>([]);
   if (state) {
     myData = myData.filter((item: any) => item?.state === state);
   }
@@ -67,8 +69,9 @@ const Home = () => {
     const values = ["zoom_changed", "drag", "click"];
 
     values.forEach((val) => {
-      findProperty(val, setState, map, infoWindow);
+      findProperty(val, setState, map, infoWindow, setNearBy);
     });
+
     // marker customization
     markerCustom(AdvancedMarkerElement, map, toggle, PinElement, infoWindow);
     // set item center selected product
@@ -84,10 +87,51 @@ const Home = () => {
       infoWindow.setPosition(v);
       infoWindow.setContent("how r uy asdf");
       infoWindow.open(map);
+      // call for nearby place function
+      nearBySearch(map, setNearBy);
     });
+    //  here street view function
+
+    const sv = new google.maps.StreetViewService();
+    panorama = new google.maps.StreetViewPanorama(
+      document.getElementById("pano") as HTMLElement
+    );
+    sv.getPanorama({ location: product.position, radius: 50 }).then(
+      processSVData
+    );
+    map.addListener("click", (event: any) => {
+      sv.getPanorama({ location: event.latLng, radius: 50 })
+        .then(processSVData)
+        .catch((e) =>
+          console.error("Street View data not found for this location.")
+        );
+    });
+
     if (product.title) {
       infoWindow.open(map);
     }
+  }
+  function processSVData({ data }: google.maps.StreetViewResponse) {
+    const location = data.location!;
+
+    panorama.setPano(location.pano as string);
+    panorama.setPov({
+      heading: 270,
+      pitch: 0,
+    });
+    panorama.setVisible(true);
+
+    map.addListener("click", () => {
+      const markerPanoID = location.pano;
+
+      // Set the Pano to use the passed panoID.
+      panorama.setPano(markerPanoID as string);
+      panorama.setPov({
+        heading: 270,
+        pitch: 0,
+      });
+      panorama.setVisible(true);
+    });
   }
   //  zoom in out drug click to the map function here
   console.log(product, "product");
@@ -97,38 +141,12 @@ const Home = () => {
       initMap();
     }
   }, [toggle, product]);
-  // Replace YOUR_API_KEY with your actual API key
-  // const [pl, setPl] = useState("");
-  // function geocodeAddress() {
-  //   const geocoder = new google.maps.Geocoder();
-  //   // const addressInput = document.getElementById("address-input");
-  //   // const address = addressInput.value;
-
-  //   geocoder.geocode({ address: pl }, function (results, status) {
-  //     if (status === "OK") {
-  //       // The 'results' variable contains an array of geocoded address information.
-  //       // The first result usually represents the most accurate match.
-  //       const location = results[0].geometry.location;
-  //       console.log(
-  //         `Latitude: ${location.lat()}, Longitude: ${location.lng()}`
-  //       );
-  //     } else {
-  //       console.error("Geocoding failed due to: " + status);
-  //     }
-  //   });
-  // }
 
   return (
     <div>
-      {/* <input
-        type="text"
-        id="address-input"
-        placeholder="Enter an address"
-        onChange={(e) => setPl(e.target.value)}
-      />
-      <button onClick={() => geocodeAddress()}>Geocode</button> */}
-
       <div id="map" className="h-[500px]"></div>
+      <div id="pano" className="h-[300px] w-full"></div>
+
       <div>
         <input
           type="text"
@@ -154,6 +172,11 @@ const Home = () => {
         >
           custom
         </button>
+      </div>
+      <div>
+        {neerby.map((item: any) => (
+          <div key={item.place_id}>{item.name}</div>
+        ))}
       </div>
     </div>
   );
