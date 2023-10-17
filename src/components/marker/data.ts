@@ -1,4 +1,5 @@
 import Custome from "@/components/customeCard/Custome";
+
 export const markerData = [
   {
     position: { lat: 34.8791806, lng: -111.8265049 },
@@ -114,23 +115,79 @@ export async function markerCustom(
 }
 
 // zoom in out control click
-export async function findProperty(value: any, setState: any, map: any) {
+export async function findProperty(
+  value: any,
+  setState: any,
+  map: any,
+  infoWindow: any
+) {
   map.addListener(value, (e: any) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode(
       { location: { lat: map?.center?.lat(), lng: map?.center?.lng() } },
       (results: any, status) => {
-        // console.log(results[0]);
-        // setProperty(results);
         const addressComponents = results[0].address_components;
         for (const component of addressComponents) {
           if (component.types.includes("administrative_area_level_1")) {
             const state = component.long_name;
             setState(state);
-            console.log("State:", state);
+            // console.log("State:", state);
+            // infoWindow?.open();
           }
         }
       }
     );
   });
 }
+
+// auto search to find place
+export const placeFind = (
+  map: any,
+  autocomplete: any,
+  infowindow: any,
+  marker: any,
+  setState: any
+) => {
+  const place = autocomplete.getPlace();
+  if (!place?.geometry?.location) {
+    window.alert("wrong address");
+    return place;
+  }
+  const addressComponents = place.address_components;
+  for (const component of addressComponents) {
+    if (component.types.includes("administrative_area_level_1")) {
+      const state = component.long_name;
+      setState(state);
+      // console.log("State:", state);
+      // infoWindow?.open();
+    }
+  }
+  // map.setCenter(place?.geometry?.location);
+  // infowindow.open(map);
+  marker.setPosition(place?.geometry?.location);
+  // return place?.geometry?.location;
+  return {
+    lat: place?.geometry?.location.lat(),
+    lng: place?.geometry?.location.lng(),
+  };
+  // marker.setVisible(true);
+  // return;
+  // const geocoder = new google.maps.Geocoder();
+  // geocoder.geocode(
+  //   { location: { lat: map?.center?.lat(), lng: map?.center?.lng() } },
+  //   (results: any, status) => {
+  //     // console.log(results[0]);
+  //     // setProperty(results);
+  //     const addressComponents = results[0].address_components;
+  //     console.log(addressComponents);
+  //     for (const component of addressComponents) {
+  //       if (component.types.includes("administrative_area_level_1")) {
+  //         const state = component.long_name;
+  //         setState(state);
+  //         console.log("State:", state);
+  //       }
+  //     }
+  //   }
+  // );
+  // map.setCenter({ lat: map?.center?.lat(), lng: map?.center?.lng() });
+};
