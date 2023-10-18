@@ -36,6 +36,62 @@ export const markerData = [
     img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
     state: "Arizona",
   },
+  {
+    position: { lat: 11.800326, lng: -140.7665047 },
+    title: "Bell Rock",
+    price: "666k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "Arizona",
+  },
+  {
+    position: { lat: 30.788872, lng: -82.019038 },
+    title: "Bell Rock1",
+    price: "666k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
+  {
+    position: { lat: 30.788872, lng: -83.019038 },
+    title: "Bell Rock3",
+    price: "66633k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
+  {
+    position: { lat: 30.800326, lng: -81.7665047 },
+    title: "Bell Rock2",
+    price: "616k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
+  {
+    position: { lat: 28.800326, lng: -81.7665047 },
+    title: "Bell Rock3",
+    price: "666k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
+  {
+    position: { lat: 27.800326, lng: -82.7665047 },
+    title: "Bell Rock4",
+    price: "666k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
+  {
+    position: { lat: 29.800326, lng: -83.7665047 },
+    title: "Bell Rock443",
+    price: "666k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
+  {
+    position: { lat: 29.820326, lng: -83.8165047 },
+    title: "Bell Rock44",
+    price: "666k",
+    img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+    state: "florida",
+  },
 ];
 
 // export function ZoomControl(controlDiv: any, map: any) {
@@ -134,8 +190,6 @@ export async function findProperty(
             const state = component.long_name;
             nearBySearch(map, setNearBy);
             setState(state);
-            // console.log("State:", state);
-            // infoWindow?.open();
           }
         }
       }
@@ -161,15 +215,9 @@ export const placeFind = (
     if (component.types.includes("administrative_area_level_1")) {
       const state = component.long_name;
       setState(state);
-      // console.log("State:", state);
-      // infoWindow?.open();
     }
   }
-  // map.setCenter(place?.geometry?.location);
-  // infowindow.open(map);
   marker.setPosition(place?.geometry?.location);
-  // return place?.geometry?.location;
-
   return {
     lat: place?.geometry?.location.lat(),
     lng: place?.geometry?.location.lng(),
@@ -180,7 +228,7 @@ export const placeFind = (
 export async function nearBySearch(map: any, setNearBy: any) {
   let lat: number = map?.center?.lat();
   let lng: number = map?.center?.lng();
-  console.log(lat, lng, "lat lng");
+
   var pyrmont = new google.maps.LatLng(lat, lng);
   var request: any = {
     location: pyrmont,
@@ -192,17 +240,126 @@ export async function nearBySearch(map: any, setNearBy: any) {
   // console.log(map.getCenter);
   let service = new google.maps.places.PlacesService(map);
   service.nearbySearch(request, callback);
-
   function callback(results: any, status: any) {
-    // setArr((prev: any) => [...prev, results]);
-
     if (status == google.maps.places.PlacesServiceStatus.OK) {
-      console.log(results);
       setNearBy(results);
-      // for (var i = 0; i < results.length; i++) {
-      //   // createMarker(results[i]);
-      //   // setNearBy(results)
-      // }
     }
   }
+}
+
+export async function streetView(map: any, product: any, setError: any) {
+  const sv = new google.maps.StreetViewService();
+  sv.getPanorama({ location: product.position, radius: 50 }).then(
+    processSVData
+  );
+  map.addListener("click", (event: any) => {
+    console.log(event.latLng.lat(), "all event latlangt");
+
+    sv.getPanorama({ location: event.latLng, radius: 50 })
+      .then(processSVData)
+      .catch((e: any) =>
+        // console.error("Street View data not found for this location.")
+        {
+          console.log(e.message);
+          // setError(false);
+          // window.alert("Street View data not found for this location.");
+        }
+      );
+  });
+  function processSVData({ data }: google.maps.StreetViewResponse) {
+    let panorama = new google.maps.StreetViewPanorama(
+      document.getElementById("pano") as HTMLElement
+    );
+    const location = data.location!;
+    panorama.setPano(location.pano as string);
+    panorama.setPov({
+      heading: 270,
+      pitch: 0,
+    });
+    panorama.setVisible(true);
+    map.addListener("click", () => {
+      const markerPanoID = location.pano;
+      // Set the Pano to use the passed panoID.
+      panorama.setPano(markerPanoID as string);
+      panorama.setPov({
+        heading: 270,
+        pitch: 0,
+      });
+      panorama.setVisible(true);
+    });
+  }
+}
+
+// dragble function
+export function dragAble(
+  map: any,
+  infoWindow: any,
+  setProduct: any,
+  AdvancedMarkerElement: any
+) {
+  const draggableMarker = new AdvancedMarkerElement({
+    map,
+    position: { lat: 37.39094933041195, lng: -122.02503913145092 },
+    gmpDraggable: true,
+    title: "This marker is draggable.",
+  });
+  draggableMarker.addListener("dragend", (event: any) => {
+    const positions = draggableMarker.position as google.maps.LatLng;
+    const lats: any = positions.lat;
+    const lngs: any = positions.lng;
+    let pro = { position: { lat: lats, lng: lngs } };
+    streetView(map, pro, setProduct);
+    infoWindow.close();
+  });
+}
+// nearby latitude longtude  property find
+// export function nearbyLatLng(map: any, setNearBy: any) {}
+// decalre circle area custom boundary
+export function circleArea(map: any, setCircle: any) {
+  interface City {
+    center: google.maps.LatLngLiteral;
+    population: number;
+  }
+  const ob = {
+    center: { lat: map?.center?.lat(), lng: map?.center?.lng() },
+    population: 2714856,
+  };
+  console.log(map?.center?.lat(), map?.center?.lng());
+  // Add the circle for this city to the map.
+  const cityCircle = new google.maps.Circle({
+    strokeColor: "#FF0000",
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: "#FF0000",
+    fillOpacity: 0.35,
+    map,
+    center: ob.center,
+    radius: Math.sqrt(ob.population) * 60,
+  });
+  const circle = new google.maps.Circle({
+    strokeColor: "#FF0000",
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: "#FF0000",
+    fillOpacity: 0.35,
+    map,
+    center: ob.center,
+    radius: Math.sqrt(ob.population) * 60,
+  });
+
+  // Calculate the highest latitude and longitude
+  const circleBounds = circle.getBounds();
+  const northEast = circleBounds?.getNorthEast();
+  const southWest = circleBounds?.getSouthWest();
+  const highestLatitude = northEast?.lat();
+  const highestLongitude = northEast?.lng();
+  const lowestLatitude = southWest?.lat();
+  const lowestLongitude = southWest?.lng();
+
+  setCircle({
+    highestLatitude,
+    highestLongitude,
+    lowestLatitude,
+    lowestLongitude,
+  });
 }

@@ -1,10 +1,13 @@
 "use client";
 import {
+  circleArea,
+  dragAble,
   findProperty,
   markerCustom,
   markerData,
   nearBySearch,
   placeFind,
+  streetView,
 } from "@/components/marker/data";
 import Index from "@/components/selectProduct";
 import React, { useEffect, useState } from "react";
@@ -14,19 +17,44 @@ var service;
 var infowindow;
 let panorama: google.maps.StreetViewPanorama;
 // declare map types
-let map: google.maps.Map;
+var map: google.maps.Map;
 let infoWindow: google.maps.InfoWindow;
 const Home = () => {
+  const [cirValue, setCirvalue] = useState<any>({});
   let myData: any = markerData;
   const [toggle, setToggle] = useState(true);
   const [state, setState] = useState<any>(null);
   const [neerby, setNearBy] = useState<any>([]);
+  const [error, setError] = useState<any>(true);
   if (state) {
-    myData = myData.filter((item: any) => item?.state === state);
+    myData = markerData.filter((item: any) => item?.state === state);
   }
   const [product, setProduct] = useState<any>({
     position: { lat: 34.8559195, lng: -111.7988186 },
   });
+  if (product?.title) {
+    myData = markerData.filter(
+      (item: any) =>
+        cirValue?.highestLatitude >= item?.position?.lat &&
+        cirValue.lowestLatitude <= item.position.lat &&
+        cirValue?.highestLongitude >= item?.position?.lng &&
+        cirValue.lowestLongitude <= item.position.lng
+      // cirValue?.  highestLongitude,
+      // cirValue?.  lowestLatitude,
+      // cirValue?. lowestLongitude,
+    );
+    console.log(myData);
+  }
+  // if (product?.title) {
+  //   myData = markerData.filter(
+  //     (item: any) =>
+  //       item?.position.lat + 0.5 >= product?.position?.lat &&
+  //       item?.position.lat - 0.5 <= product?.position?.lat &&
+  //       item?.position.lng + 0.5 >= product?.position?.lng &&
+  //       item?.position.lng - 0.5 <= product?.position?.lng
+  //   );
+  // }
+
   async function initMap() {
     // decalre map library
     const { Map } = (await google.maps.importLibrary(
@@ -39,13 +67,16 @@ const Home = () => {
     var pyrmonts = new google.maps.LatLng(-33.8665433, 151.1956316);
     map = new Map(document.getElementById("map") as HTMLElement, {
       center: pyrmonts,
-      zoom: 14,
-      mapId: "googlemapid",
+      zoom: 7,
+      // maxZoom: 10,
+      // minZoom: 5,
+      mapId: "15431d2b469f209dsfdsfsde",
       zoomControl: false,
       fullscreenControl: false,
       streetViewControl: false,
       mapTypeControl: false,
     });
+
     // custom zoom button
     // var zoomInButton: any = document.createElement("div");
     // var zoomControlDiv: any = document.createElement("div");
@@ -66,12 +97,14 @@ const Home = () => {
     };
     // find place library  = autcomplete
     const autocomplete = new google.maps.places.Autocomplete(input, options);
-    const values = ["zoom_changed", "drag", "click"];
 
+    const values = ["zoom_changed", "drag", "click"];
     values.forEach((val) => {
       findProperty(val, setState, map, infoWindow, setNearBy);
     });
-
+    // map.addListener("click", () => {
+    //   console.log(map.getCenter().lat(), map.getCenter().lng());
+    // });
     // marker customization
     markerCustom(AdvancedMarkerElement, map, toggle, PinElement, infoWindow);
     // set item center selected product
@@ -81,6 +114,7 @@ const Home = () => {
       map,
       anchorPoint: new google.maps.Point(0, -29),
     });
+    // autocomplete field for searcing
     autocomplete.addListener("place_changed", () => {
       const v = placeFind(map, autocomplete, infoWindow, marker, setState);
       map.setCenter(v);
@@ -92,49 +126,19 @@ const Home = () => {
     });
     //  here street view function
 
-    const sv = new google.maps.StreetViewService();
-    panorama = new google.maps.StreetViewPanorama(
-      document.getElementById("pano") as HTMLElement
-    );
-    sv.getPanorama({ location: product.position, radius: 50 }).then(
-      processSVData
-    );
-    map.addListener("click", (event: any) => {
-      sv.getPanorama({ location: event.latLng, radius: 50 })
-        .then(processSVData)
-        .catch((e) =>
-          console.error("Street View data not found for this location.")
-        );
-    });
-
+    // street view function
+    streetView(map, product, setProduct);
+    //  dragAble function decalre here
+    dragAble(map, infoWindow, setProduct, AdvancedMarkerElement);
+    // cicle the area
+    circleArea(map, setCirvalue);
     if (product.title) {
       infoWindow.open(map);
     }
   }
-  function processSVData({ data }: google.maps.StreetViewResponse) {
-    const location = data.location!;
 
-    panorama.setPano(location.pano as string);
-    panorama.setPov({
-      heading: 270,
-      pitch: 0,
-    });
-    panorama.setVisible(true);
-
-    map.addListener("click", () => {
-      const markerPanoID = location.pano;
-
-      // Set the Pano to use the passed panoID.
-      panorama.setPano(markerPanoID as string);
-      panorama.setPov({
-        heading: 270,
-        pitch: 0,
-      });
-      panorama.setVisible(true);
-    });
-  }
   //  zoom in out drug click to the map function here
-  console.log(product, "product");
+
   useEffect(() => {
     window.initMap = initMap;
     if (typeof google !== "undefined") {
@@ -187,3 +191,8 @@ export default Home;
 export const Items1 = ({ product }: any) => {
   return <>welcome back hom e {product?.title}</>;
 };
+
+// 31.679993, -81.813439
+// 29.900472, -82.137332
+// 1.779521 0.793432
+//0.323893
