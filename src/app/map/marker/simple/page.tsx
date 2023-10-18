@@ -68,8 +68,8 @@ const Home = () => {
     map = new Map(document.getElementById("map") as HTMLElement, {
       center: pyrmonts,
       zoom: 7,
-      // maxZoom: 10,
-      // minZoom: 5,
+      maxZoom: 10,
+      minZoom: 5,
       mapId: "15431d2b469f209dsfdsfsde",
       zoomControl: false,
       fullscreenControl: false,

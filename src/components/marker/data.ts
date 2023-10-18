@@ -9,7 +9,7 @@ export const markerData = [
     state: "Arizona",
   },
   {
-    position: { lat: -33.8665433, lng: 151.1956316 },
+    position: { lat: 38.8665433, lng: 86.1956316 },
     title: "Airport Mesa",
     price: "223k",
     img: "/next.svg",
@@ -140,6 +140,21 @@ export async function markerCustom(
   PinElement: any,
   infoWindow: any
 ) {
+  const polylineCoordinates = markerData.map((position) => {
+    return new google.maps.LatLng(position.position.lat, position.position.lng);
+  });
+
+  // Create a polyline to connect the markers
+  const polyline = new google.maps.Polyline({
+    path: polylineCoordinates,
+    geodesic: true,
+    strokeColor: "#FF0000", // Line color
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+  });
+
+  // Set the map for the polyline
+  polyline.setMap(map);
   markerData.forEach((items) => {
     const { position, price, title, img } = items;
     // customer marker design for every user
