@@ -313,7 +313,7 @@ export function dragAble(
 ) {
   const draggableMarker = new AdvancedMarkerElement({
     map,
-    position: { lat: 28.800326, lng: -81.7665047 },
+    position: { lat: 31.900326, lng: -83.9665047 },
     gmpDraggable: true,
     title: "This marker is draggable.",
   });
