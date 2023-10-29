@@ -1,9 +1,7 @@
-import Custome from "@/components/customeCard/Custome";
-
 export const markerData = [
   {
     position: { lat: 34.8791806, lng: -111.8265049 },
-    title: "Boynton Pass",
+    title: "Boyanton Pass",
     price: "123k",
     img: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
     state: "Arizona",
@@ -93,7 +91,6 @@ export const markerData = [
     state: "florida",
   },
 ];
-
 // export function ZoomControl(controlDiv: any, map: any) {
 //   // Creating divs & styles for custom zoom control
 //   controlDiv.style.padding = "5px";
@@ -138,25 +135,13 @@ export async function markerCustom(
   map: any,
   toggle: any,
   PinElement: any,
-  infoWindow: any
+  infoWindow: any,
+  toggles: any
 ) {
-  const polylineCoordinates = markerData.map((position) => {
-    return new google.maps.LatLng(position.position.lat, position.position.lng);
-  });
-
   // Create a polyline to connect the markers
-  const polyline = new google.maps.Polyline({
-    path: polylineCoordinates,
-    geodesic: true,
-    strokeColor: "#FF0000", // Line color
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-  });
-
-  // Set the map for the polyline
-  polyline.setMap(map);
-  markerData.forEach((items) => {
+  const polylineCoordinates = markerData.map((items) => {
     const { position, price, title, img } = items;
+
     // customer marker design for every user
     const beachFlagImg = document.createElement("img");
     beachFlagImg.src = `${img}`;
@@ -182,7 +167,21 @@ export async function markerCustom(
       infoWindow.setContent(items.title);
       infoWindow.open(marker.map, marker);
     });
+    return new google.maps.LatLng(position?.lat, position?.lng);
   });
+  // line create with every marker
+  const polyline = new google.maps.Polyline({
+    path: polylineCoordinates,
+    geodesic: true,
+    strokeColor: "green", // Line color
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+  });
+
+  // Set the map for the polyline
+  if (toggles) {
+    polyline.setMap(map);
+  }
 }
 
 // zoom in out control click
@@ -363,6 +362,7 @@ export function circleArea(map: any, setCircle: any) {
   });
 
   // Calculate the highest latitude and longitude
+  //latitude and longitude we need to move getBounds()
   const circleBounds = circle.getBounds();
   const northEast = circleBounds?.getNorthEast();
   const southWest = circleBounds?.getSouthWest();

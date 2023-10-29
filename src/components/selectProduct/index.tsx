@@ -1,4 +1,4 @@
-const Index = ({ data, setProduct, product }: any) => {
+const Index = ({ data, setProduct }: any) => {
   return (
     <div>
       {data.map((item: any, index: number) => (
