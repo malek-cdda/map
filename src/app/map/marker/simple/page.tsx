@@ -11,6 +11,7 @@ import {
   streetView,
 } from "@/components/marker/data";
 import Index from "@/components/selectProduct";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 
@@ -27,6 +28,7 @@ const Home = () => {
   const [state, setState] = useState<any>(null);
   const [neerby, setNearBy] = useState<any>([]);
   // const [error, setError] = useState<any>(true);
+  console.log(neerby);
   if (state) {
     myData = markerData.filter((item: any) => item?.state === state);
   }
@@ -170,6 +172,11 @@ const Home = () => {
 
   return (
     <div>
+      <Script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-CWmVyAapUI5zhqL8zIj8Oa6a95UexVs&callback=initMap&libraries=places&v=weekly"
+        defer
+      ></Script>
+      <Script src="https://polyfill.io/v3/polyfill.min.js?features=default"></Script>
       <div id="map" className="h-[500px]"></div>
       <div id="pano" className="h-[300px] w-full"></div>
       <div>
